@@ -1,1 +1,1 @@
-Anscombe quadruplets in Tidyverse
+Anscombe's Quartet in Tidyverse.

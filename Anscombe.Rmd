@@ -1,6 +1,8 @@
 ---
-title: "Anscombe's quartet"
-output: html_notebook
+title: "Anscombe's Quartet"
+output:
+    html_document:
+        theme: cosmo
 ---
 
 # Introduction
@@ -8,46 +10,25 @@ output: html_notebook
 Anscombe's quartet comprises four data sets that have nearly identical simple
 descriptive statistics, yet have very different distributions and appear very
 different when graphed. I am going to repeat calculations and graphs using a
-`tidyverse` approach.
+*tidy* approach.
 
 # Packages
 
-```{r packages, warning=FALSE, message=FALSE}
+```{r packages, warning = FALSE, message = FALSE}
 library(tidyverse)
+#library(tidymodels)
+
 library(kableExtra)
+
+theme_set(theme_minimal(18))
 ```
 
 # Data
 
-The Anscombe dataset can be found in the base R `datasets` package.
+Load data from csv created in the `make_tidy_csv.R` script.
 
 ```{r}
-anscombe %>% kable() %>% kable_styling()
-```
-
-First let's create a `tibble` containing the data.
-
-```{r}
-grp1 <- anscombe %>% select(x = x1, y = y1) %>% mutate(group = "Group 1")
-grp2 <- anscombe %>% select(x = x2, y = y2) %>% mutate(group = "Group 2")
-grp3 <- anscombe %>% select(x = x3, y = y3) %>% mutate(group = "Group 3")
-grp4 <- anscombe %>% select(x = x4, y = y4) %>% mutate(group = "Group 4")
-
-
-
-data <- bind_rows(grp1, grp2, grp3, grp4) %>%
-  
-  as_tibble() %>%
-  
-  mutate(group = as_factor(group))
-
-
-
-rm(grp1, grp2, grp3, grp4)
-
-
-
-# data %>% kable() %>% kable_styling()
+data <- read_csv("anscombe.csv")
 ```
 
 # Numerical Summaries
@@ -71,15 +52,17 @@ r_squared <- function(x, y){
 }
 
 data %>%
+    
   group_by(group) %>%
+
   summarise(mean_x    = mean(x)         %>% round(1),
             var_x     = var(x)          %>% round(1),
-            mean_y    = mean(y)         %>% round(1),
-            var_y     = var(y)          %>% round(1),
-            corr      = cor(x, y)       %>% round(1),
-            intercept = intercept(x, y) %>% round(1),
-            slope     = slope(x, y)     %>% round(1),
-            r_squared = r_squared(x,y)  %>% round(2)) %>%
+            mean_y    = mean(y)         %>% round(2),
+            var_y     = var(y)          %>% round(3),
+            corr      = cor(x, y)       %>% round(3),
+            intercept = intercept(x, y) %>% round(3),
+            slope     = slope(x, y)     %>% round(3),
+            r_squared = r_squared(x,y)  %>% round(3)) %>%
   
   kable(col.names = c("Group",
                       "Mean X",
@@ -89,27 +72,50 @@ data %>%
                       "Correlation X and Y",
                       "Intercept",
                       "Slope",
-                      "R Squared")) %>%
-  kable_styling()
+                      "R Squared"),
+        
+        format = "markdown")
 ```
 
 # Scatterplots
 
 Finally let's plot the four datasets.
 
-```{r plot, fig.align = "center"}
-ggplot(data, aes(x = x, y = y)) +
-  ggtitle("Anscombe's quartet") +
-  geom_point(size = 2) +
-  geom_smooth(method = "lm", se = FALSE, color = "red", fullrange = TRUE) +
-  facet_wrap(vars(group)) +
-  theme_bw(base_size=12) +
-  theme(axis.title.x = element_blank(),
-        axis.title.y = element_blank(),
-        plot.title = element_text(hjust = 0.5, size = 24), )
+```{r plot, fig.align = "center", message = FALSE, fig.width = 10, fig.height = 10}
+data %>%
+    
+    ggplot(mapping = aes(x = x, y = y)) +
+    
+    labs(title = "Anscombe's Quartet") +
+    
+    geom_point(size = 3) +
+    
+    geom_smooth(method = "lm", se = FALSE,
+                
+                color = "red", fullrange = TRUE, size = 1.5) +
+    
+    facet_wrap(~group, 
+               
+               labeller = as_labeller(
+                   c(`Group_1` = "Group 1",
+                     `Group_2` = "Group 2",
+                     `Group_3` = "Group 3",
+                     `Group_4` = "Group 4"))
+    ) +
+    
+    theme(plot.title = element_text(hjust = 0.5, size = 30),
+          
+          axis.title.x = element_blank(),
+          
+          axis.title.y = element_blank(),
+          
+          strip.background = element_rect(color="black", size=0.5, linetype="solid"),
+          
+          panel.border = element_rect(color="black", size=0.5, linetype="solid", fill = NA)
+    )
 ```
+
 # References
 
-This [Wikipedia](https://en.wikipedia.org/wiki/Anscombe%27s_quartet) page and
-the references therein. 
+This [Wikipedia](https://en.wikipedia.org/wiki/Anscombe%27s_quartet) page. 
 
