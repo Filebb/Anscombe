@@ -57,12 +57,12 @@ data %>%
 
   summarise(mean_x    = mean(x)         %>% round(1),
             var_x     = var(x)          %>% round(1),
-            mean_y    = mean(y)         %>% round(2),
-            var_y     = var(y)          %>% round(3),
-            corr      = cor(x, y)       %>% round(3),
-            intercept = intercept(x, y) %>% round(3),
-            slope     = slope(x, y)     %>% round(3),
-            r_squared = r_squared(x,y)  %>% round(3)) %>%
+            mean_y    = mean(y)         %>% round(1),
+            var_y     = var(y)          %>% round(1),
+            corr      = cor(x, y)       %>% round(2),
+            intercept = intercept(x, y) %>% round(2),
+            slope     = slope(x, y)     %>% round(2),
+            r_squared = r_squared(x,y)  %>% round(2)) %>%
   
   kable(col.names = c("Group",
                       "Mean X",
@@ -103,15 +103,19 @@ data %>%
                      `Group_4` = "Group 4"))
     ) +
     
-    theme(plot.title = element_text(hjust = 0.5, size = 30),
+    theme(plot.title       = element_text(hjust = 0.5, size = 30),
           
-          axis.title.x = element_blank(),
+          axis.title.x     = element_blank(),
           
-          axis.title.y = element_blank(),
+          axis.title.y     = element_blank(),
           
-          strip.background = element_rect(color="black", size=0.5, linetype="solid"),
+          strip.background = element_rect(color="black", size=0.5,
+                                          
+                                          linetype="solid"),
           
-          panel.border = element_rect(color="black", size=0.5, linetype="solid", fill = NA)
+          panel.border     = element_rect(color="black", size=0.5,
+                                          
+                                          linetype="solid", fill = NA)
     )
 ```
 
