@@ -16,7 +16,7 @@ different when graphed. I am going to repeat calculations and graphs using a
 
 ```{r packages, warning = FALSE, message = FALSE}
 library(tidyverse)
-#library(tidymodels)
+library(tidymodels)
 
 library(kableExtra)
 
@@ -37,18 +37,49 @@ For each of the four datasets let's evaluate some basic numerical summaries.
 
 ```{r}
 intercept <- function(x, y) {
-  model <- lm(y ~ x)
-  coefficients(model)[1]
+    
+    data <- tibble(x = x, y = y)
+    
+    model <- linear_reg() %>% 
+        set_mode(mode = "regression") %>% 
+        set_engine(engine = "lm") %>% 
+        fit(y ~ x, data = data)
+    
+    model %>%
+        tidy() %>%
+        filter(term == "(Intercept)") %>% 
+        select(estimate) %>% 
+        pull()
 }
 
 slope <- function(x, y) {
-  model <- lm(y ~ x)
-  coefficients(model)[2]
+    
+    data <- tibble(x = x, y = y)
+    
+    model <- linear_reg() %>% 
+        set_mode(mode = "regression") %>% 
+        set_engine(engine = "lm") %>% 
+        fit(y ~ x, data = data)
+    
+    model %>%
+        tidy() %>%
+        filter(term == "x") %>% 
+        select(estimate) %>% 
+        pull()
 }
 
-r_squared <- function(x, y){
-  model <- lm(y ~ x)
-  summary(model)$r.squared 
+r_squared <- function(x, y) {
+    
+    data <- tibble(x = x, y = y)
+    
+    model <- linear_reg() %>% 
+        set_mode(mode = "regression") %>% 
+        set_engine(engine = "lm") %>% 
+        fit(y ~ x, data = data)
+    
+    glance(model) %>% 
+        select(r.squared) %>% 
+        pull()
 }
 
 data %>%

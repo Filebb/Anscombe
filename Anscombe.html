@@ -394,7 +394,7 @@ repeat calculations and graphs using a <em>tidy</em> approach.</p>
 <div id="packages" class="section level1">
 <h1>Packages</h1>
 <pre class="r"><code>library(tidyverse)
-#library(tidymodels)
+library(tidymodels)
 
 library(kableExtra)
 
@@ -419,18 +419,49 @@ script.</p>
 <p>For each of the four datasets let’s evaluate some basic numerical
 summaries.</p>
 <pre class="r"><code>intercept &lt;- function(x, y) {
-  model &lt;- lm(y ~ x)
-  coefficients(model)[1]
+    
+    data &lt;- tibble(x = x, y = y)
+    
+    model &lt;- linear_reg() %&gt;% 
+        set_mode(mode = &quot;regression&quot;) %&gt;% 
+        set_engine(engine = &quot;lm&quot;) %&gt;% 
+        fit(y ~ x, data = data)
+    
+    model %&gt;%
+        tidy() %&gt;%
+        filter(term == &quot;(Intercept)&quot;) %&gt;% 
+        select(estimate) %&gt;% 
+        pull()
 }
 
 slope &lt;- function(x, y) {
-  model &lt;- lm(y ~ x)
-  coefficients(model)[2]
+    
+    data &lt;- tibble(x = x, y = y)
+    
+    model &lt;- linear_reg() %&gt;% 
+        set_mode(mode = &quot;regression&quot;) %&gt;% 
+        set_engine(engine = &quot;lm&quot;) %&gt;% 
+        fit(y ~ x, data = data)
+    
+    model %&gt;%
+        tidy() %&gt;%
+        filter(term == &quot;x&quot;) %&gt;% 
+        select(estimate) %&gt;% 
+        pull()
 }
 
-r_squared &lt;- function(x, y){
-  model &lt;- lm(y ~ x)
-  summary(model)$r.squared 
+r_squared &lt;- function(x, y) {
+    
+    data &lt;- tibble(x = x, y = y)
+    
+    model &lt;- linear_reg() %&gt;% 
+        set_mode(mode = &quot;regression&quot;) %&gt;% 
+        set_engine(engine = &quot;lm&quot;) %&gt;% 
+        fit(y ~ x, data = data)
+    
+    glance(model) %&gt;% 
+        select(r.squared) %&gt;% 
+        pull()
 }
 
 data %&gt;%
