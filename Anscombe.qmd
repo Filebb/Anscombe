@@ -1,8 +1,6 @@
 ---
 title: "Anscombe's Quartet"
-output:
-    html_document:
-        theme: cosmo
+format: html
 ---
 
 # Introduction
@@ -14,7 +12,7 @@ different when graphed. I am going to repeat calculations and graphs using a
 
 # Packages
 
-```{r packages, warning = FALSE, message = FALSE}
+```{r packages, message=FALSE, warning=FALSE}
 library(tidyverse)
 library(tidymodels)
 
@@ -152,5 +150,4 @@ data %>%
 
 # References
 
-This [Wikipedia](https://en.wikipedia.org/wiki/Anscombe%27s_quartet) page. 
-
+This [Wikipedia](https://en.wikipedia.org/wiki/Anscombe%27s_quartet) page.
