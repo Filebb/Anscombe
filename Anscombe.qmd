@@ -8,7 +8,7 @@ format: html
 Anscombe's quartet comprises four data sets that have nearly identical simple
 descriptive statistics, yet have very different distributions and appear very
 different when graphed. I am going to repeat calculations and graphs using a
-*tidy* approach.
+*tidyverse* approach.
 
 # Packages
 
@@ -16,9 +16,9 @@ different when graphed. I am going to repeat calculations and graphs using a
 library(tidyverse)
 library(tidymodels)
 
-library(kableExtra)
+library(ggthemes)
 
-theme_set(theme_minimal(18))
+library(kableExtra)
 ```
 
 # Data
@@ -111,41 +111,31 @@ data %>%
 Finally let's plot the four datasets.
 
 ```{r plot, fig.align = "center", message = FALSE, fig.width = 10, fig.height = 10}
-data %>%
+plot <- data %>%
     
     ggplot(mapping = aes(x = x, y = y)) +
     
     labs(title = "Anscombe's Quartet") +
     
-    geom_point(size = 3) +
+    geom_point(size = 3, color = "steelblue") +
     
-    geom_smooth(method = "lm", se = FALSE,
+    geom_smooth(method = "lm", se = FALSE, alpha = 0.1,
                 
-                color = "red", fullrange = TRUE, size = 1.5) +
+                color = "black", fullrange = TRUE, size = 1.5) +
     
-    facet_wrap(~group, 
-               
-               labeller = as_labeller(
-                   c(`Group_1` = "Group 1",
-                     `Group_2` = "Group 2",
-                     `Group_3` = "Group 3",
-                     `Group_4` = "Group 4"))
-    ) +
+    facet_wrap(~group, labeller = as_labeller(
+        c(`Group_1` = "Group 1",
+          `Group_2` = "Group 2",
+          `Group_3` = "Group 3",
+          `Group_4` = "Group 4"))) +
     
-    theme(plot.title       = element_text(hjust = 0.5, size = 30),
-          
-          axis.title.x     = element_blank(),
-          
-          axis.title.y     = element_blank(),
-          
-          strip.background = element_rect(color="black", size=0.5,
-                                          
-                                          linetype="solid"),
-          
-          panel.border     = element_rect(color="black", size=0.5,
-                                          
-                                          linetype="solid", fill = NA)
-    )
+    theme_fivethirtyeight() +
+    
+    theme(strip.text.x = element_text(size = 15))
+
+plot
+
+ggsave("anscombe.png", plot = plot)
 ```
 
 # References
