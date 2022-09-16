@@ -17,6 +17,9 @@ library(tidyverse)
 library(tidymodels)
 
 library(ggthemes)
+library(hrbrthemes)
+
+hrbrthemes::import_roboto_condensed()
 
 library(kableExtra)
 ```
@@ -129,7 +132,8 @@ plot <- data %>%
           `Group_3` = "Group 3",
           `Group_4` = "Group 4"))) +
     
-    theme_fivethirtyeight() +
+    # theme_fivethirtyeight() +
+    theme_ipsum() +
     
     theme(strip.text.x = element_text(size = 15))
 
