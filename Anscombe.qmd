@@ -1,6 +1,8 @@
 ---
 title: "Anscombe's Quartet"
-format: html
+format:
+    html:
+        code-fold: true
 ---
 
 # Introduction
@@ -8,18 +10,15 @@ format: html
 Anscombe's quartet comprises four data sets that have nearly identical simple
 descriptive statistics, yet have very different distributions and appear very
 different when graphed. I am going to repeat calculations and graphs using a
-*tidyverse* approach.
+*tidy* approach.
 
 # Packages
 
-```{r packages, message=FALSE, warning=FALSE}
+```{r packages}
+#| message: false
+
 library(tidyverse)
 library(tidymodels)
-
-library(ggthemes)
-library(hrbrthemes)
-
-hrbrthemes::import_roboto_condensed()
 
 library(kableExtra)
 ```
@@ -29,7 +28,11 @@ library(kableExtra)
 Load data from csv created in the `make_tidy_csv.R` script.
 
 ```{r}
-data <- read_csv("anscombe.csv")
+anscombe_data <- read_csv("anscombe.csv",
+                          
+                          col_types = list(x = "n", y = "n", group = "f"),
+                          
+                          show_col_types = FALSE)
 ```
 
 # Numerical Summaries
@@ -83,61 +86,68 @@ r_squared <- function(x, y) {
         pull()
 }
 
-data %>%
+anscombe_data %>%
     
-  group_by(group) %>%
-
-  summarise(mean_x    = mean(x)         %>% round(1),
-            var_x     = var(x)          %>% round(1),
-            mean_y    = mean(y)         %>% round(1),
-            var_y     = var(y)          %>% round(1),
-            corr      = cor(x, y)       %>% round(2),
-            intercept = intercept(x, y) %>% round(2),
-            slope     = slope(x, y)     %>% round(2),
-            r_squared = r_squared(x,y)  %>% round(2)) %>%
-  
-  kable(col.names = c("Group",
-                      "Mean X",
-                      "Variance X",
-                      "Mean Y",
-                      "Variance Y",
-                      "Correlation X and Y",
-                      "Intercept",
-                      "Slope",
-                      "R Squared"),
-        
-        format = "markdown")
+    group_by(group) %>%
+    
+    summarise(mean_x    = mean(x)         %>% round(1),
+              var_x     = var(x)          %>% round(1),
+              mean_y    = mean(y)         %>% round(1),
+              var_y     = var(y)          %>% round(1),
+              corr      = cor(x, y)       %>% round(2),
+              intercept = intercept(x, y) %>% round(2),
+              slope     = slope(x, y)     %>% round(2),
+              r_squared = r_squared(x,y)  %>% round(2)) %>%
+    
+    kable(col.names = c("Group",
+                        "Mean X",
+                        "Variance X",
+                        "Mean Y",
+                        "Variance Y",
+                        "Correlation X and Y",
+                        "Intercept",
+                        "Slope",
+                        "R Squared"),
+          
+          format = "markdown")
 ```
 
 # Scatterplots
 
 Finally let's plot the four datasets.
 
-```{r plot, fig.align = "center", message = FALSE, fig.width = 10, fig.height = 10}
-plot <- data %>%
-    
-    ggplot(mapping = aes(x = x, y = y)) +
-    
-    labs(title = "Anscombe's Quartet") +
-    
-    geom_point(size = 3, color = "steelblue") +
-    
-    geom_smooth(method = "lm", se = FALSE, alpha = 0.1,
-                
-                color = "black", fullrange = TRUE, size = 1.5) +
-    
-    facet_wrap(~group, labeller = as_labeller(
-        c(`Group_1` = "Group 1",
-          `Group_2` = "Group 2",
-          `Group_3` = "Group 3",
-          `Group_4` = "Group 4"))) +
-    
-    # theme_fivethirtyeight() +
-    theme_ipsum() +
-    
-    theme(strip.text.x = element_text(size = 15))
+```{r plot}
+(plot <- anscombe_data %>%
+     
+     ggplot(mapping = aes(x = x, y = y)) +
+     
+     labs(title = "Anscombe's Quartet") +
+     
+     geom_smooth(method = "lm", se = FALSE,
+                 
+                 color = "darkgrey", fullrange = TRUE, size = 0.9) +
+     
+     geom_point(size = 2.5, color = "deepskyblue") +
+     
+     coord_fixed(ratio = 0.85) +
+     
+     facet_wrap(~group, labeller = as_labeller(
+         c(`Group_1` = "Group 1",
+           `Group_2` = "Group 2",
+           `Group_3` = "Group 3",
+           `Group_4` = "Group 4"))) +
+     
+     ggthemes::theme_fivethirtyeight() +
+     #hrbrthemes::theme_ipsum() +
+     #theme_minimal() +
+     #theme(strip.text.x = element_text(size = 15))
+     
+     theme(axis.title = element_blank(),text = element_text(size = 15)))
+```
 
-plot
+```{r}
+#| echo: false
+#| message: false
 
 ggsave("anscombe.png", plot = plot)
 ```
